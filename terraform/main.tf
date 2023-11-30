@@ -10,9 +10,7 @@ provider "aws" {
   region = var.region
 }
 
-provider "random" {
-  
-}
+provider "random" {}
 
 # Secret Manager 
 resource "random_password" "dbpassword" {
@@ -67,10 +65,10 @@ resource "aws_secretsmanager_secret_policy" "secret-policy" {
 				"AWS": "*"
 			},
 			"Action": [
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:ListSecrets"
-            ],
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:ListSecrets"
+        ],
 				"Resource": "*"
 			}
 		]
