@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import CreateUserForm, LoginForm
+from .forms import CreateUserForm, LoginForm, UpdateUserForm, UpdateProfileForm
 from .models import Profile
 from django.contrib.auth.models import auth 
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User 
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -47,10 +49,44 @@ def user_logout(request):
     return redirect("home") 
 
 
+@login_required(login_url="my-login")
 def dashboard(request):
-    return render(request, "main/dashboard.html")
+    profile_pic = Profile.objects.get(user=request.user)
+    context = {"profile_pic": profile_pic}
+    return render(request, "main/dashboard.html", context=context)
 
 
+@login_required(login_url="my-login")
 def profile_management(request):
-    return render(request, "main/profile-management.html")
+    user_form = UpdateUserForm(instance=request.user)
+    
+    profile = Profile.objects.get(user=request.user)
+    
+    profile_form = UpdateProfileForm(instance=profile)
+    
+    if request.method == "POST":
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=profile)
+        
+        if user_form.is_valid():
+            user_form.save()
+            return redirect("dashboard")
+        
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect("dashboard")
+        
+    context = {"user_form": user_form, "profile_form":profile_form}
+    return render(request, "main/profile-management.html", context=context)
 
+
+@login_required(login_url="my-login")
+def delete_account(request):
+    if request.method == "POST":
+        deleted_user = User.objects.get(username=request.user)
+        deleted_user.delete()
+        
+        return redirect("home")
+
+    return render(request, "main/delete-account.html")
