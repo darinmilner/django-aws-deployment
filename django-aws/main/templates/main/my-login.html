@@ -10,6 +10,10 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     </head>
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
+        <a class="navbar-brand main-heading" href="{% url 'home' %}">My Website</a>
+    </nav>
+
     <br>
     <div class="container bg-white shawdow-md p-5 form-layout">
         <h1>LOGIN</h1>
@@ -20,9 +24,11 @@
             <br>
             {{form.password|as_crispy_field}}
             <br>
-            <input class="btn btn-primary" type="submit" value="submit"/>
+            <input class="btn btn-primary w-100" type="submit" value="Login"/>
             <br>
         </form>
+
+        <p>Don't have an account? <br> <a href="{% url 'register' %}">Create an account</a></p>
     </div>
 
      <script src="{% static 'js/app.js' %}"></script>

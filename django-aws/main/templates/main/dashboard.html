@@ -7,6 +7,8 @@
         <link rel="stylesheet" type="text/css" href="https://bootswatch.com/5/morph/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     </head>
+
+    {% include 'main/navbar.html' %}
         <br>
         <br>
     <div class="container bg-white shadow-md p-5 form-layout">
@@ -26,13 +28,7 @@
 
         <img style="width: 100px;" src="{{profile_pic.profile_pic.url}}"/>
         <br>
-
-        <h5>You have logged in successfully</h5>
         <br>
-        
-        <a href="{% url 'profile-management' %}">Update your profile</a>
-        <br>
-        <a href="{% url 'user-logout' %}">Logout</a>
     </div>
 
      
