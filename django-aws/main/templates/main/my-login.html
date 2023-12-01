@@ -20,10 +20,12 @@
         <br> 
         <form method="POST" autocomplete="off">
             {% csrf_token %}
+
             {{form.username|as_crispy_field}}
             <br>
             {{form.password|as_crispy_field}}
             <br>
+            
             <input class="btn btn-primary w-100" type="submit" value="Login"/>
             <br>
         </form>

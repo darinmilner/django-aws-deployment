@@ -18,6 +18,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "upload-bucket-enc
   }
 }
 
+resource "aws_s3_bucket_versioning" "upload-bucket-versioning" {
+  bucket = aws_s3_bucket.upload-bucket.bucket
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket_cors_configuration" "upload-bucket-cors" {
   bucket = aws_s3_bucket.upload-bucket.id 
 
@@ -43,6 +50,9 @@ resource "aws_s3_bucket_policy" "upload-bucket-policy" {
 
 data "aws_iam_policy_document" "bucket-access" {
   statement {
+    effect = "Allow"
+    sid = "Upload Bucket Policy"
+
     principals {
       type        = "AWS"
       identifiers = ["*"]

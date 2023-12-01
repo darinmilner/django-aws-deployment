@@ -3,11 +3,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+1(euh0t4fa_(26!cni+s#+wtkpx_^u^86_#ot2ujxed)pa3mr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -27,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "main",
     "crispy_forms",
+    "storages",
 ]
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
@@ -121,3 +117,26 @@ MEDIA_ROOT = BASE_DIR / "static/images"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# AWS configuration 
+AWS_ACCESS_KEY_ID = "" # TODO: store in .env file
+AWS_SECRET_ACCESS_KEY = ""
+
+AWS_STORAGE_BUCKET_NAME = "bucket-name-here"
+
+# storage config for S3
+STORAGES = {
+    # Media file (image) management
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+    
+    #css and JS file management
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+
+AWS_S3_FILE_OVERWRITE = False 
