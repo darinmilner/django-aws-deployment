@@ -1,0 +1,10 @@
+Install pytest-django
+Install python-dotenv
+install black and flake8
+Create a base, local, and production settings py file and in a seperate settings folder 
+Move the sensitive variables to a .env file and refer to them in the settings file 
+Improve the profile model and add it to the html templates
+Write tests to test the profile model and templates
+Create a footer component HTML template 
+Seperate the Terraform code to KMS, S3, and Secrets Managers modules
+Create an RDS module 
