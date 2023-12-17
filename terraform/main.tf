@@ -14,4 +14,5 @@ provider "random" {}
 
 locals {
   short_region = replace(var.region, "-","")
+  env = jsondecode(file("./env.json"))
 }
