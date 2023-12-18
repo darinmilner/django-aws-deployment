@@ -1,6 +1,9 @@
 Terraform code to deploy a Django app
 
 Resource Structure
+*kms.tf
+**main.tf**
+**outputs.tf**
 
 | Resource        | File             | Description               |
 | :---------------|:----------------:|--------------------------:|
@@ -9,3 +12,4 @@ Resource Structure
 | Secret Manager  |secrets.tf        | creates a *secret*        |
 | Random Password |secrets.tf        | creates a *random password* for the DB   |
 | Variables       |variables.tf      | file with variables for parameterization.   |
+| Outputs         |outputs.tf        | Resource related **outputs** |
