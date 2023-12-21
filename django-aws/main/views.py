@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from .forms import CreateUserForm, LoginForm, UpdateUserForm, UpdateProfileForm
 from .models import Profile
 from django.contrib.auth.models import auth 
@@ -90,3 +90,7 @@ def delete_account(request):
         return redirect("home")
 
     return render(request, "main/delete-account.html")
+
+def profile_single(request, profile):
+    profile = get_object_or_404(Profile, user=profile.user )
+    return render(request, "main/single-profile.html", {"profile": profile})

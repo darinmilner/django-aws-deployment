@@ -10,7 +10,7 @@ resource "aws_secretsmanager_secret" "dbsecretmaster" {
   kms_key_id = aws_kms_key.secret-kms-key.id 
 
   tags = {
-    "Name" = "AppSecrets"
+    "Name" = "AppSecrets-${var.environment}"
   }
 }
 

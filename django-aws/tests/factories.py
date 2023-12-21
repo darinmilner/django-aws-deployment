@@ -17,4 +17,6 @@ class ProfileFactory(factory.django.DjangoModelFactory):
         model = Profile 
         
     about_me = "test"
+    display_name = "iamatest"
+    location = "earth"
     
