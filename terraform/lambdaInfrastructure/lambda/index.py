@@ -16,9 +16,12 @@ REGION="us-east-1"
 LOG_GROUP=f"/aws/lambda/inventory-lambda-dev-{REGION}"
 LOG_STREAM="stream1"
 
+def get_timestamp():
+    return  int(round(time.time() * 1000))
+
 
 def write_to_cloudwatch(details):
-    timestamp = int(round(time.time() * 1000))
+    timestamp = get_timestamp()
     
     response = logs.put_log_events(
         logGroupName=LOG_GROUP,
@@ -34,19 +37,20 @@ def write_to_cloudwatch(details):
     pprint(response)
     
 
-def upload_to_dynamodb(details, resource_type):
-    pprint(f"Uploading {len(details)} {resource_type} details to db {details}")
+def upload_to_dynamodb(resources, details, resource_type):
+    pprint(f"Uploading {len(resources)} {resource_type} resources to db {details}")
     table = dynamodb.Table("inventoryTable")
+   
     try:
         response = None
-        # with table.batch_writer() as batch:
-        for i in details:
-            print(f"details {i['name']}")
+        # with table.batch_writer() as batch
+        for i in resources:
+            print(f"resources {i['name']}")
             response = table.put_item(
                 Item={
                     "resourceName" : i["name"],
-                    "details" : details,
                     "resourceType" : resource_type,
+                    "details": details,
                 }
             )
             
@@ -57,7 +61,7 @@ def upload_to_dynamodb(details, resource_type):
             return 
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
             print("Item added successfully")
-            log_details = f"{details} {resource_type}"
+            log_details = f"{resources} {details} {resource_type}"
             print(log_details)
             write_to_cloudwatch(log_details)
     except Exception as e:
@@ -85,50 +89,54 @@ def lambda_handler(event, context):
     #Filter instances based on instance type
     instances = ec2.instances.filter(Filters=[{'Name': 'instance-state-name', 'Values': ['stopped','running','pending','stopping','shutting-down']}])
     types = ['t3','c4','m3']
-    details = []
+    current_instances = []
     pprint(instances)
     for instance in instances:
         instance_type = instance.instance_type
         if any(x in instance_type for x in types):
-            details.append([instance.id,instance.instance_type, REGION])
-    pprint(details)
-    upload_to_dynamodb(details, "EC2")
+            current_instances.append([instance.id,instance.instance_type, REGION])
+    pprint(current_instances)
+    upload_to_dynamodb(current_instances, instances, "EC2")
+    s3_name_inventory()
    
         
 def s3_name_inventory():
     buckets = [bucket.name for bucket in s3.buckets.all()]
-    pprint(s3.buckets.all())
-    pprint(buckets)
+    s3_client = boto3.client("s3")
+    
+    details = s3_client.list_buckets()
+   
     bucket_list = []
     for bucket in buckets:
         bucket_list.append({"name": bucket})
-    upload_to_dynamodb(bucket_list, "S3")
+    upload_to_dynamodb(bucket_list, details, "S3")
     
     
 def vpc_endpoints_inventory():
-    endpoints = ec2_client.describe_vpc_endpoints()
-    pprint(endpoints["VpcEndpoints"])
-    vpc_endpoints = endpoints["VpcEndpoints"]
+    endpoints_details = ec2_client.describe_vpc_endpoints()
+    pprint(endpoints_details["VpcEndpoints"])
+    vpc_endpoints = endpoints_details["VpcEndpoints"]
     if vpc_endpoints == []:
         pprint("There are no VPC Endpoints found.")
         return
-    upload_to_dynamodb(vpc_endpoints, "VPC Endpoints")
+    upload_to_dynamodb(vpc_endpoints, endpoints_details, "VPC Endpoints")
     
 def security_group_inventory():
+    sg_details = ec2_client.describe_security_groups()
     groups = [{"name": group['GroupName']}
-           for group in ec2_client.describe_security_groups()['SecurityGroups']]
+           for group in sg_details['SecurityGroups']]
     
     pprint(f"Security Groups {groups}")
-    upload_to_dynamodb(groups, "Security Groups")
+    upload_to_dynamodb(groups,sg_details, "Security Groups")
    
     
 def autoscaling_inventory():
     response = autoscaling_client.describe_auto_scaling_groups()
     pprint(response)
-    upload_to_dynamodb(response, "ASGs")
+    upload_to_dynamodb(response, "ASG")
 
     
 s3_name_inventory()
-security_group_inventory()
+# security_group_inventory()
 # vpc_endpoints_inventory()
 #lambda_handler(1,1)
