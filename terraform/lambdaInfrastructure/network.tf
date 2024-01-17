@@ -17,18 +17,18 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 }
 
-resource "aws_vpc_endpoint" "s3-endpoint" {
-  service_name    = "com.amazonaws.${var.region}.s3"
-  route_table_ids = [aws_route_table.private-route.id]
-  vpc_id          = aws_vpc.main.id
-}
+# resource "aws_vpc_endpoint" "s3-endpoint" {
+#   service_name    = "com.amazonaws.${var.region}.s3"
+#   route_table_ids = [aws_route_table.private-route.id]
+#   vpc_id          = aws_vpc.main.id
+# }
 
-resource "aws_vpc_endpoint" "dynamodb-endpoint" {
-  service_name       = "com.amazonaws.${var.region}.dynamodb"
-  route_table_ids    = [aws_route_table.private-route.id]
-  security_group_ids = []
-  vpc_id             = aws_vpc.main.id
-}
+# resource "aws_vpc_endpoint" "dynamodb-endpoint" {
+#   service_name       = "com.amazonaws.${var.region}.dynamodb"
+#   route_table_ids    = [aws_route_table.private-route.id]
+#   security_group_ids = []
+#   vpc_id             = aws_vpc.main.id
+# }
 
 # resource "aws_internet_gateway" "igw" {
 #   vpc_id = aws_vpc.main.id

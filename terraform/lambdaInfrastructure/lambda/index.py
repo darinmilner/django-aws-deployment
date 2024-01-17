@@ -2,6 +2,7 @@ import os
 import time 
 import boto3
 import csv
+import logging
 from pprint import pprint
 
 ec2 = boto3.resource('ec2')
@@ -10,6 +11,9 @@ autoscaling_client = boto3.client("autoscaling")
 s3 = boto3.resource('s3')
 logs = boto3.client("logs")
 dynamodb = boto3.resource("dynamodb")
+
+logger = logging.getLogger()
+logger.setLevel("INFO")
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 REGION="us-east-1"
@@ -38,7 +42,7 @@ def write_to_cloudwatch(details):
     
 
 def upload_to_dynamodb(resources, details, resource_type):
-    pprint(f"Uploading {len(resources)} {resource_type} resources to db {details}")
+    logger.info(f"Uploading {len(resources)} {resource_type} resources to db {details}")
     table = dynamodb.Table("inventoryTable")
    
     try:
@@ -58,14 +62,17 @@ def upload_to_dynamodb(resources, details, resource_type):
         
         if response == None:
             pprint("No Response was returned")
+            logger.warn("Dynamo DB returned no response.")
             return 
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
             print("Item added successfully")
             log_details = f"{resources} {details} {resource_type}"
             print(log_details)
+            logger.log(f"{log_details} are saved in the database.")
             write_to_cloudwatch(log_details)
     except Exception as e:
         print(f"An Error Occured  {e}")
+        logger.error(f"An error occurred when writing to the DB {e}")
         write_to_cloudwatch(f"An Error Occured {response}")
         
 def upload_to_s3(details):
@@ -86,6 +93,7 @@ def upload_to_s3(details):
     bucket.upload_file('/tmp/test.csv', key)
 
 def lambda_handler(event, context):
+    logger.info(f"Incoming event {event}")
     #Filter instances based on instance type
     instances = ec2.instances.filter(Filters=[{'Name': 'instance-state-name', 'Values': ['stopped','running','pending','stopping','shutting-down']}])
     types = ['t3','c4','m3']
