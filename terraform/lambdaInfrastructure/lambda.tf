@@ -45,6 +45,15 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/servicerole/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_lambda_permission" "api-lambda-permission" {
+  statement_id = "AllowExecutionFromAPIGateway"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.inventory-lambda.function_name
+  principal = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.test-api.execution_arn}/*/*/*"
+}
+
 resource "aws_iam_role_policy" "dynamodb-lambda-policy" {
   name = "dynamodb-lambda-policy"
   role = aws_iam_role.lambda-role.id

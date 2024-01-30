@@ -25,7 +25,7 @@ resource "aws_api_gateway_integration" "lambda-integration" {
   resource_id = local.resource_id
   http_method = local.http_post_type
   integration_http_method = aws_api_gateway_method.proxy.http_method
-  type = "MOCK"
+  type = "AWS"
 }
 
 resource "aws_api_gateway_method_response" "ok-response" {
