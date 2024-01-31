@@ -7,10 +7,10 @@ data "archive_file" "lambda" {
 
 # Zip lambda folder first
 resource "aws_lambda_function" "inventory-lambda" {
-  function_name = "inventory-lambda-${var.environment}-${local.short_region}"
-  role          = aws_iam_role.lambda-role.arn
-  handler       = "index.lambda_handler"
-  filename      = "lambda.zip"
+  function_name    = "inventory-lambda-${var.environment}-${local.short_region}"
+  role             = aws_iam_role.lambda-role.arn
+  handler          = "index.lambda_handler"
+  filename         = "lambda.zip"
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
   runtime = "python3.10"
@@ -18,7 +18,7 @@ resource "aws_lambda_function" "inventory-lambda" {
   environment {
     variables = {
       DB_TABLE_NAME = aws_dynamodb_table.db-table.name
-      ENVIRONMENT = var.environment
+      ENVIRONMENT   = var.environment
     }
   }
 }
@@ -46,10 +46,10 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
 }
 
 resource "aws_lambda_permission" "api-lambda-permission" {
-  statement_id = "AllowExecutionFromAPIGateway"
-  action = "lambda:InvokeFunction"
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.inventory-lambda.function_name
-  principal = "apigateway.amazonaws.com"
+  principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.test-api.execution_arn}/*/*/*"
 }
