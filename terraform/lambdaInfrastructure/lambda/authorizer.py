@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         "Statement" : [
             {
                 "Action": "execute-api:Invoke",
-                "Resource" : [f"arn:aws:execute-api:{region}:{account_id}-id:{api_id}r/*/*"], # gives permission to call all api endpoints
+                "Resource" : [f"arn:aws:execute-api:{region}:{account_id}:{api_id}/*/*"], # gives permission to call all api endpoints
                 "Effect" : auth 
             }
         ]
