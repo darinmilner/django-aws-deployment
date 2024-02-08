@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     logger.info(f"Auth Event {event}")
     
     # check token validity
-    if event["authToken"] == "d-abc123":
+    if event["authoriationToken"] == "d-abc123":
         auth = "Allow"
     else: 
         auth = "Deny"
