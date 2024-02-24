@@ -17,3 +17,5 @@ resource "aws_apigatewayv2_vpc_link" "vpc-link" {
     aws_subnet.private-b.id
   ]
 }
+
+# s3 integration with api gateway - for putting object in the s3 PutObect Permissions needed
