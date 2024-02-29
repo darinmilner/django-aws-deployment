@@ -71,3 +71,62 @@ resource "aws_api_gateway_integration_response" "response" {
 
   depends_on = [aws_api_gateway_method.proxy, aws_api_gateway_integration.lambda-integration]
 }
+
+resource "aws_api_gateway_integration" "s3-integration" {
+  rest_api_id = local.api_id
+  resource_id = local.resource_id
+  http_method = "GET"
+  integration_http_method = "GET"
+  type = "AWS"
+  uri = "api-gateway-path/bucket/key"
+  passthrough_behavior = "WHEN_NO_MATCH"
+  request_templates = {
+    "application/json" = {
+      "statusCode" : 200
+    }
+  }
+}
+
+resource "aws_api_gateway_method_response" "s3-method-response" {
+  rest_api_id = local.api_id
+  resource_id = local.resource_id
+  http_method = aws_api_gateway_integration.s3-integration.http_method
+  status_code = "200"
+}
+
+resource "aws_api_gateway_integration_response" "s3-integration-response" {
+  rest_api_id = local.api_id
+  resource_id = local.resource_id
+  http_method = aws_api_gateway_integration.s3-integration.http_method
+  status_code = aws_api_gateway_method_response.s3_method_response.status_code
+  response_templates = {
+    "application/json" = ""
+  }
+}
+
+# Authorizor 
+resource "aws_api_gateway_authorizer" "api-authorizor" {
+  rest_api_id = local.api_id
+  name = "api-authorizor"
+  type = "TOKEN"
+  identity_source = "method.request.header.Authorization"
+  authorizer_uri = "your-auth-lambda-arn"
+  authorizer_credentials = aws_iam_role.lambda-role.arn # api gateway role
+}
+
+# deployment
+resource "aws_api_gateway_deployment" "api-deployment" {
+  depends_on = [ aws_api_gateway_integration.s3-integration ]
+  rest_api_id = local.api_id
+  stage_name = "dev"
+}
+
+resource "aws_api_gateway_stage" "api-stage" {
+  rest_api_id = local.api_id
+  stage_name = aws_api_gateway_deployment.api-deployment.stage_name  
+  deployment_id = aws_api_gateway_deployment.api-deployment.id 
+  cache_cluster_enabled = false 
+  # TODO  - Throws Error
+  authorizer_id = aws_api_gateway_authorizer.api-authorizor.id  
+}
+#TODO Add S3 API ROLE and Policy
