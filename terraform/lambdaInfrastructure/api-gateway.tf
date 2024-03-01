@@ -103,30 +103,3 @@ resource "aws_api_gateway_integration_response" "s3-integration-response" {
     "application/json" = ""
   }
 }
-
-# Authorizor 
-resource "aws_api_gateway_authorizer" "api-authorizor" {
-  rest_api_id = local.api_id
-  name = "api-authorizor"
-  type = "TOKEN"
-  identity_source = "method.request.header.Authorization"
-  authorizer_uri = "your-auth-lambda-arn"
-  authorizer_credentials = aws_iam_role.lambda-role.arn # api gateway role
-}
-
-# deployment
-resource "aws_api_gateway_deployment" "api-deployment" {
-  depends_on = [ aws_api_gateway_integration.s3-integration ]
-  rest_api_id = local.api_id
-  stage_name = "dev"
-}
-
-resource "aws_api_gateway_stage" "api-stage" {
-  rest_api_id = local.api_id
-  stage_name = aws_api_gateway_deployment.api-deployment.stage_name  
-  deployment_id = aws_api_gateway_deployment.api-deployment.id 
-  cache_cluster_enabled = false 
-  # TODO  - Throws Error
-  authorizer_id = aws_api_gateway_authorizer.api-authorizor.id  
-}
-#TODO Add S3 API ROLE and Policy
