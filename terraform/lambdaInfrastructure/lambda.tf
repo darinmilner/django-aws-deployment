@@ -51,7 +51,7 @@ resource "aws_lambda_permission" "api-lambda-permission" {
   function_name = aws_lambda_function.inventory-lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${aws_api_gateway_rest_api.test-api.execution_arn}/*/*/*"
+  source_arn = "${module.api-gateway.rest-api-arn}/*/*/*"
 }
 
 resource "aws_iam_role_policy" "dynamodb-lambda-policy" {

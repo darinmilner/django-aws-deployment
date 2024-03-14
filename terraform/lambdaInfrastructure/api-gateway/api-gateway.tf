@@ -73,17 +73,19 @@ resource "aws_api_gateway_integration_response" "response" {
 }
 
 resource "aws_api_gateway_integration" "s3-integration" {
-  rest_api_id = local.api_id
-  resource_id = local.resource_id
-  http_method = "GET"
+  rest_api_id             = local.api_id
+  resource_id             = local.resource_id
+  http_method             = "GET"
   integration_http_method = "GET"
-  type = "AWS"
-  uri = "api-gateway-path/bucket/key"
-  passthrough_behavior = "WHEN_NO_MATCH"
+  type                    = "AWS"
+  uri                     = "api-gateway-path/bucket/key"
+  passthrough_behavior    = "WHEN_NO_MATCH"
   request_templates = {
-    "application/json" = {
-      "statusCode" : 200
-    }
+    "application/json" = "statusCode : 200"
+  }
+
+  request_parameters = {
+    "integration.request.header.X-Authorization" = "'static'"
   }
 }
 
@@ -98,8 +100,10 @@ resource "aws_api_gateway_integration_response" "s3-integration-response" {
   rest_api_id = local.api_id
   resource_id = local.resource_id
   http_method = aws_api_gateway_integration.s3-integration.http_method
-  status_code = aws_api_gateway_method_response.s3_method_response.status_code
-  response_templates = {
-    "application/json" = ""
-  }
+  status_code = aws_api_gateway_method_response.s3-method-response.status_code
+
+  # May NOT be needed
+  # response_templates = {
+  #   "application/json" = ""
+  # }
 }

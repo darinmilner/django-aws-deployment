@@ -1,3 +1,4 @@
+# TODO: Create as own module
 data "aws_route53_zone" "my-domain" {
   name         = "mydomain.com"
   private_zone = false
@@ -9,12 +10,13 @@ resource "aws_route53_record" "api-domain-record" {
   type = "CNAME"
   ttl  = "300"
 
-  records = ["${aws_api_gateway_rest_api.test-api.id}.execute-api.${var.region}.amazonaws.com"]
+  records = ["${module.api-gateway.rest-api-id}.execute-api.${var.region}.amazonaws.com"]
   zone_id = data.aws_route53_zone.my-domain.zone_id
 }
 # provision an ACM Certificate to register with the custom domain
 resource "aws_acm_certificate" "api-cert" {
-  domain_name = "api.mydomain.com"
-  subject_alternative_names = [ "api.mydomain.com" ]
-  validation_method = "DNS"
+  domain_name               = "api.mydomain.com"
+  subject_alternative_names = ["api.mydomain.com"]
+  validation_method         = "DNS"
 }
+
