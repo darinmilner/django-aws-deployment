@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "invocation-policy" {
   statement {
     effect    = "Allow"
     actions   = ["lambda:InvokeFunction"]
-    resources = [aws_lambda_function.authorizor-lambda.arn]
+    resources = [aws_lambda_function.authorizer-lambda.arn]
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_iam_role" "auth-lambda-role" {
 resource "aws_lambda_permission" "allow-apigw-invoke" {
   statement_id = "allowInvokeFromAPIGatewayAuthorizer"
   action = "lambda:InvokeFunction"
-  function_name = aws_api_gateway_authorizer.api-authorizor.function_name
+  function_name = aws_api_gateway_authorizer.api-authorizer.function_name
   principal = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_rest_api.test-api.execution_arn}/authorizers/${aws_api_gateway_authorizer.api-authorizor.id}"
+  source_arn = "${aws_api_gateway_rest_api.test-api.execution_arn}/authorizers/${aws_api_gateway_authorizer.api-authorizer.id}"
 }

@@ -13,6 +13,12 @@ resource "aws_api_gateway_resource" "root-endpoint" {
   path_part   = "api" // endpoint  <URL>/api
 }
 
+resource "aws_api_gateway_resource" "s3-endpoint" {
+  rest_api_id = local.api_id
+  parent_id = aws_api_gateway_rest_api.test-api.root_resource_id
+  path_part = "photos"
+}
+
 resource "aws_api_gateway_method" "proxy" {
   rest_api_id   = local.api_id
   resource_id   = local.resource_id
@@ -70,6 +76,14 @@ resource "aws_api_gateway_integration_response" "response" {
   }
 
   depends_on = [aws_api_gateway_method.proxy, aws_api_gateway_integration.lambda-integration]
+}
+
+resource "aws_api_gateway_method" "s3-method" {
+  rest_api_id =local.api_id
+  resource_id = aws_api_gateway_resource.s3-endpoint.id 
+  http_method = "GET"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.api-authorizer.id  
 }
 
 resource "aws_api_gateway_integration" "s3-integration" {

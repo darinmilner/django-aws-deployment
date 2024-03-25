@@ -5,10 +5,16 @@ resource "aws_cognito_user_pool" "user-pool" {
     name = "email"
     attribute_data_type = "String"
     required = true 
-
+    developer_only_attribute = false 
     // SAML IDP requires attributes to be mutable
     mutable = true 
   }
+
+  email_configuration {
+    email_sending_account = "COGNITO_DEFAULT"
+  }
+
+  auto_verified_attributes = [ "email" ]  // verifies email
 }
 
 resource "aws_cognito_user_pool_client" "user-pool-client" {
@@ -39,15 +45,19 @@ resource "aws_cognito_identity_provider" "saml-provider" {
   provider_name = "saml-provider-${var.environment}"
   provider_type = "SAML"
 
- provider_details = {
-   MetadataFile = file("pathto/samlmetadatafile")
-   SSORedirectBindingURI = var.sso-redirect-binding-uri 
- }
+  provider_details = {
+    MetadataFile = file("pathto/samlmetadatafile")
+    SSORedirectBindingURI = var.sso-redirect-binding-uri 
+    IDPInit = true 
+    IDPSSignout = true 
+    EncryptedResponses = true 
+    RequestSigningAlgorith = "rsa-sha256"
+  }
 
- # map of user pool attributes
- attribute_mapping = {
-   email = "email"
- }
+  # map of user pool attributes
+  attribute_mapping = {
+    email = "email"
+  }
 }
 
 resource "aws_cognito_user_pool_domain" "saml-domain" {
