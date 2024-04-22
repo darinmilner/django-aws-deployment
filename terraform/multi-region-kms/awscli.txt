@@ -1,0 +1,29 @@
+AWS CLI Commands to Create KMS Keys
+
+Creates a basic symmetric encryption KMS Key. 
+aws kms create-key 
+
+Creates a multi region KMS Key 
+aws kms create-key --multi-region 
+
+Enables key reotation
+aws kms enable-key-rotation --key-id <key-arn>
+
+Adds a key policy from a json file 
+aws kms put-key-policy --policy-name default-policy --key-id <KeyID> --policy file://key-policy.json 
+
+Schedule Key Deletion
+aws kms schedule-key-deletion --key-id <key-id> --pending-window-in-days 7
+
+Add or Update the key's description
+aws kms update-key-description --key-id <key-id> --description "This is your key's description"
+
+Create A Key Alias
+aws kms create-alias --alias-name alias/example --target-key-id <key-id>
+
+Add a tag to an existing key
+aws kms tag-resource --key-id <key-id> --tags TagKey="Tag1",TagValue="Tag1Value" TagKey="Tag2",TagValue="Tag2Value"
+
+Create a replica key 
+aws kms replicate-key --key-id <primary-key-id> --replica-region us-west-1
+

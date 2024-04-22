@@ -38,6 +38,12 @@ resource "aws_kms_replica_key" "replica-key-useast2" {
   description             = "Multi Region Replica Key"
   deletion_window_in_days = 7
   primary_key_arn         = aws_kms_key.kms-key.arn
+  policy                  = data.aws_iam_policy_document.kms-policy.json
+}
+
+resource "aws_kms_alias" "kms-replica-alias" {
+  name          = "alias/topic-key-replica"
+  target_key_id = aws_kms_replica_key.replica-key-useast2.key_id
 }
 
 # resource "aws_kms_key_policy" "key-policy" {

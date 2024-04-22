@@ -10,6 +10,7 @@ ec2_client = boto3.client('ec2')
 autoscaling_client = boto3.client("autoscaling")
 s3 = boto3.resource('s3')
 logs = boto3.client("logs")
+alb_client = boto3.client("elb")
 dynamodb = boto3.resource("dynamodb")
 
 logger = logging.getLogger()
@@ -66,6 +67,7 @@ def lambda_handler(event, context):
     #Filter instances based on instance type
     ec2_inventory()
     s3_name_inventory()
+    alb_inventory()
     # TODO: Call all inventory functions
    
   
@@ -115,10 +117,11 @@ def autoscaling_inventory():
     response = autoscaling_client.describe_auto_scaling_groups()
     pprint(response)
     upload_to_dynamodb(response, "ASG")
+    
+def alb_inventory():
+    response = alb_client.describe_load_balancers()
+    pprint(response)
+    albs = response["LoadBalancerDescriptions"]
+    upload_to_dynamodb(albs, response, "ALB")
 
-
-# ec2_inventory()   
-# s3_name_inventory()
-# security_group_inventory()
-# vpc_endpoints_inventory()
-#lambda_handler(1,1)
+lambda_handler(1,1)
