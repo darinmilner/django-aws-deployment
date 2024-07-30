@@ -21,7 +21,7 @@ locals {
 }
 
 resource "aws_kms_key" "kms-key" {
-  description             = "Topic KMS Key"
+  description             = "KMS ${var.key-name}"
   deletion_window_in_days = 7
   enable_key_rotation     = true
   multi_region            = true
@@ -29,40 +29,20 @@ resource "aws_kms_key" "kms-key" {
 }
 
 resource "aws_kms_alias" "kms-alias" {
-  name          = "alias/topic-key"
+  name          = "alias/${var.key-name}"
   target_key_id = aws_kms_key.kms-key.key_id
 }
 
 resource "aws_kms_replica_key" "replica-key-useast2" {
   provider                = aws.useast2
-  description             = "Multi Region Replica Key"
+  description             = "Multi Region Replica ${var.key-name} Key"
   deletion_window_in_days = 7
   primary_key_arn         = aws_kms_key.kms-key.arn
   policy                  = data.aws_iam_policy_document.kms-policy.json
 }
 
 resource "aws_kms_alias" "kms-replica-alias" {
-  name          = "alias/topic-key-replica"
+  provider      = aws.useast2
+  name          = "alias/${var.key-name}-replica"
   target_key_id = aws_kms_replica_key.replica-key-useast2.key_id
 }
-
-# resource "aws_kms_key_policy" "key-policy" {
-#   key_id = aws_kms_key.kms-key.id
-#   policy = jsonencode({
-#     Id = "kms-key-policy-${local.short_region}"
-#     Statement = [
-#       {
-#         Action = "kms:*"
-#         Effect = "Allow"
-#         Principal = {
-#           AWS = "*"
-#         }
-#         Resource = "*"
-#         Sid      = "Enable IAM User Permissions"
-#       },
-#     ]
-#     Version = "2012-10-17"
-#   })
-# }
-
-
