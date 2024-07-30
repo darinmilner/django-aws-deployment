@@ -37,6 +37,6 @@ def encrypt_files_in_bucket(bucket_name, kms_key_id):
         print(f"{object_key} could not be encrypted {e}")
 
 if __name__ == "__main__":
-    bucket_name = 'taskapi-storage-bucket-useast1'  # Replace with your bucket name
-    kms_key_id = 'arn:aws:kms:us-east-1:157150173222:key/mrk-c683ac5ca96b49c5a88a0c0df5bab340'        # Replace with your KMS CMK ID
+    bucket_name = 'your-storage-bucket'  # Replace with your bucket name
+    kms_key_id = 'yourKMSKeyArn'        # Replace with your KMS CMK ID
     encrypt_files_in_bucket(bucket_name, kms_key_id)
