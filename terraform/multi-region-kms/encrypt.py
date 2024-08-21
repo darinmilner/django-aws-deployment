@@ -37,12 +37,6 @@ def encrypt_files_in_bucket(bucket_name, kms_key_id):
         print(f"{object_key} could not be encrypted {e}")
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     bucket_name = 'bucket-name'  # Replace with your bucket name
     kms_key_id = 'yourKMSId'        # Replace with your KMS CMK ID
     encrypt_files_in_bucket(bucket_name, kms_key_id)
-=======
-    bucket_name = 'your-storage-bucket'  # Replace with your bucket name
-    kms_key_id = 'yourKMSKeyArn'        # Replace with your KMS CMK ID
-    encrypt_files_in_bucket(bucket_name, kms_key_id)
->>>>>>> 9b17cd1ddabf63acbedd3b5e954b2723f5a65d16
