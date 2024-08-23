@@ -15,8 +15,8 @@ resource "aws_api_gateway_resource" "root-endpoint" {
 
 resource "aws_api_gateway_resource" "s3-endpoint" {
   rest_api_id = local.api_id
-  parent_id = aws_api_gateway_rest_api.test-api.root_resource_id
-  path_part = "photos"
+  parent_id   = aws_api_gateway_rest_api.test-api.root_resource_id
+  path_part   = "photos"
 }
 
 resource "aws_api_gateway_method" "proxy" {
@@ -79,11 +79,11 @@ resource "aws_api_gateway_integration_response" "response" {
 }
 
 resource "aws_api_gateway_method" "s3-method" {
-  rest_api_id =local.api_id
-  resource_id = aws_api_gateway_resource.s3-endpoint.id 
-  http_method = "GET"
+  rest_api_id   = local.api_id
+  resource_id   = aws_api_gateway_resource.s3-endpoint.id
+  http_method   = "GET"
   authorization = "CUSTOM"
-  authorizer_id = aws_api_gateway_authorizer.api-authorizer.id  
+  authorizer_id = aws_api_gateway_authorizer.api-authorizer.id
 }
 
 resource "aws_api_gateway_integration" "s3-integration" {

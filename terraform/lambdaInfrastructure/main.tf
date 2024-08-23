@@ -16,19 +16,19 @@ provider "aws" {
 provider "random" {}
 
 locals {
-  short_region   = replace(var.region, "-", "")
+  short_region = replace(var.region, "-", "")
 }
 
 module "api-gateway" {
-  source = "./api-gateway"
-  aws_region = var.region
+  source      = "./api-gateway"
+  aws_region  = var.region
   environment = var.environment
 }
 
 module "Cognito" {
-  source = "./congnito"
-  environment = var.environment
+  source                   = "./congnito"
+  environment              = var.environment
   sso-redirect-binding-uri = "your-uri"
-  cert-arn = "your-cert0arn"
-  dns-name = "your-dns"
+  cert-arn                 = "your-cert0arn"
+  dns-name                 = "your-dns"
 }

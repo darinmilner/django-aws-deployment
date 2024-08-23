@@ -19,6 +19,6 @@ variable "region" {
 }
 
 variable "environment" {
-  type = string 
+  type    = string
   default = "dev"
 }

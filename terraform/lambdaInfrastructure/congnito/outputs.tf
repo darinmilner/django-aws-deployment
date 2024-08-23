@@ -3,7 +3,7 @@ output "user-pool-name" {
 }
 
 output "user-pool-arn" {
-  value = aws_cognito_user_pool.user-pool.arn 
+  value = aws_cognito_user_pool.user-pool.arn
 }
 
 output "saml-provider-id" {

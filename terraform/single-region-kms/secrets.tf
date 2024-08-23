@@ -6,8 +6,8 @@ resource "random_password" "dbpassword" {
 
 #Create an AWS Secret for the db
 resource "aws_secretsmanager_secret" "dbsecretmaster" {
-  name = "${var.secret-name}-${local.env[var.environment]["secretName"]}"
-  kms_key_id = aws_kms_key.secret-kms-key.id 
+  name       = "${var.secret-name}-${local.env[var.environment]["secretName"]}"
+  kms_key_id = aws_kms_key.secret-kms-key.id
 
   tags = {
     "Name" = "AppSecrets-${var.environment}"

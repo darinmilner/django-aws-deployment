@@ -3,8 +3,8 @@ resource "aws_s3_bucket" "upload-bucket" {
 }
 
 resource "aws_s3_bucket_acl" "upload-bucket-acl" {
-  bucket = aws_s3_bucket.upload-bucket.id 
-  acl = "public-read"
+  bucket = aws_s3_bucket.upload-bucket.id
+  acl    = "public-read"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "upload-bucket-encryption" {
@@ -26,12 +26,12 @@ resource "aws_s3_bucket_versioning" "upload-bucket-versioning" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "upload-bucket-cors" {
-  bucket = aws_s3_bucket.upload-bucket.id 
+  bucket = aws_s3_bucket.upload-bucket.id
 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["PUT", "POST"]
-    allowed_origins = ["https://s3-website-test.hashicorp.com"]  # TODO: change to website url
+    allowed_origins = ["https://s3-website-test.hashicorp.com"] # TODO: change to website url
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
@@ -43,7 +43,7 @@ resource "aws_s3_bucket_cors_configuration" "upload-bucket-cors" {
 }
 
 resource "aws_s3_bucket_policy" "upload-bucket-policy" {
-  bucket = aws_s3_bucket.upload-bucket.id 
+  bucket = aws_s3_bucket.upload-bucket.id
   policy = data.aws_iam_policy_document.bucket-access.json
 }
 
@@ -51,7 +51,7 @@ resource "aws_s3_bucket_policy" "upload-bucket-policy" {
 data "aws_iam_policy_document" "bucket-access" {
   statement {
     effect = "Allow"
-    sid = "Upload Bucket Policy"
+    sid    = "Upload Bucket Policy"
 
     principals {
       type        = "AWS"

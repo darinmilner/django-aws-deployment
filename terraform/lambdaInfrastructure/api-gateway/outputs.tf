@@ -3,5 +3,5 @@ output "rest-api-arn" {
 }
 
 output "rest-api-id" {
-  value = aws_api_gateway_rest_api.test-api.id 
+  value = aws_api_gateway_rest_api.test-api.id
 }

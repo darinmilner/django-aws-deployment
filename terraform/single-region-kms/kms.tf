@@ -1,7 +1,7 @@
 resource "aws_kms_key" "secret-kms-key" {
   description             = "Secret KMS Key"
   deletion_window_in_days = 7
-  enable_key_rotation = true 
+  enable_key_rotation     = true
 }
 
 resource "aws_kms_alias" "kms-alias" {
@@ -12,7 +12,7 @@ resource "aws_kms_alias" "kms-alias" {
 resource "aws_kms_key" "bucket-kms-key" {
   description             = "Bucket KMS Key"
   deletion_window_in_days = 7
-  enable_key_rotation = true 
+  enable_key_rotation     = true
 }
 
 resource "aws_kms_alias" "bucket-kms-alias" {

@@ -24,7 +24,7 @@ data "aws_identitystore_group" "identity-store-group" {
   alternate_identifier {
     unique_attribute {
       attribute_path  = "DisplayName"
-      attribute_value = var.group-name  # each.value.group_name if using for_each
+      attribute_value = var.group-name # each.value.group_name if using for_each
     }
   }
 }

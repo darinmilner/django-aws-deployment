@@ -7,5 +7,5 @@ output "secret-key-arn" {
 }
 
 output "bucket-key-arn" {
-  value = aws_kms_alias.bucket-kms-alias.arn 
+  value = aws_kms_alias.bucket-kms-alias.arn
 }
