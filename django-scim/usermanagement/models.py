@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         return self.get(username=username)
     
     
-    
+# This is overridden user model that uses SCIMUserMixin
 class User(AbstractSCIMUserMixin, TimeStampedModel, AbstractBaseUser): 
     username = models.CharField(
         _("Username"),
