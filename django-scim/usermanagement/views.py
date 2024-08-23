@@ -1,42 +1,55 @@
+from uuid import UUID
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import User
-from .serializers import UserSerializer
+
+from .models import User, Group
+from .serializers import UserSerializer, GroupSerializer
+from .exceptions import SCIMConflict, SCIMNotFound, SCIMBadRequest
+from rest_framework.exceptions import APIException
 
 class SCIMUserView(APIView):
 
     def get(self, request, pk=None):
-        if pk:
-            try:
-                user = User.objects.get(pk=pk)
+        try:
+            if pk:
+                uuid_pk = UUID(pk)
+                print(uuid_pk)
+                user = User.objects.get(pk=uuid_pk)
+                print(user)
                 serializer = UserSerializer(user)
                 return Response(serializer.data)
-            except User.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            users = User.objects.all()
-            serializer = UserSerializer(users, many=True)
-            return Response(serializer.data)
+            else:
+                users = User.objects.all()
+                serializer = UserSerializer(users, many=True)
+                return Response(serializer.data)
+        except User.DoesNotExist:
+            raise SCIMNotFound()
+        except Exception as e:
+            raise SCIMBadRequest(str(e))
 
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise SCIMConflict(str(e))
 
     def put(self, request, pk):
         try:
             user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            raise SCIMBadRequest(serializer.errors)
         except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise SCIMNotFound()
+        except Exception as e:
+            raise SCIMBadRequest(str(e))
 
     def delete(self, request, pk):
         try:
@@ -44,5 +57,51 @@ class SCIMUserView(APIView):
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            raise SCIMNotFound()
+        except Exception as e:
+            raise SCIMBadRequest(str(e))
+        
+class SCIMGroupView(APIView):
+
+    def get(self, request, pk=None):
+        try:
+            if pk is not None:
+                group = Group.objects.get(pk=pk)
+                serializer = GroupSerializer(group)
+                return Response(serializer.data)
+            else:
+                groups = Group.objects.all()
+                serializer = GroupSerializer(groups, many=True)
+                return Response(serializer.data)
+        except Group.DoesNotExist:
+            raise SCIMNotFound(detail=f"Resource {pk} not found")
+        except Exception as e:
+            raise APIException(detail=str(e))
+
+    def post(self, request):
+        serializer = GroupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            group = Group.objects.get(pk=pk)
+        except Group.DoesNotExist:
+            raise SCIMNotFound(detail=f"Resource {pk} not found")
+
+        serializer = GroupSerializer(group, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            group = Group.objects.get(pk=pk)
+            group.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Group.DoesNotExist:
+            raise SCIMNotFound(detail=f"Resource {pk} not found")
 
