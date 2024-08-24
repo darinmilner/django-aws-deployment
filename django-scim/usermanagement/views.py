@@ -11,12 +11,11 @@ from rest_framework.exceptions import APIException
 class SCIMUserView(APIView):
 
     def get(self, request, pk=None):
+        print(pk)
         try:
             if pk:
-                uuid_pk = UUID(pk)
-                print(uuid_pk)
-                user = User.objects.get(pk=uuid_pk)
-                print(user)
+                str_pk = str(pk)
+                user = User.objects.get(pk=str_pk)
                 serializer = UserSerializer(user)
                 return Response(serializer.data)
             else:
@@ -62,11 +61,11 @@ class SCIMUserView(APIView):
             raise SCIMBadRequest(str(e))
         
 class SCIMGroupView(APIView):
-
     def get(self, request, pk=None):
         try:
-            if pk is not None:
-                group = Group.objects.get(pk=pk)
+            if pk:
+                str_pk = str(pk)
+                group = Group.objects.get(pk=str_pk)
                 serializer = GroupSerializer(group)
                 return Response(serializer.data)
             else:

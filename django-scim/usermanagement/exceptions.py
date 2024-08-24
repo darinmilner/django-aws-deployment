@@ -3,12 +3,12 @@ from rest_framework import status
 
 
 class SCIMNotFound(APIException):
-    status_code = 404
+    status_code = status.HTTP_404_NOT_FOUND
     default_detail = 'Resource not found.'
     default_code = 'not_found'
 
 class SCIMConflict(APIException):
-    status_code = 409
+    status_code = status.HTTP_409_CONFLICT
     default_detail = 'Resource already exists.'
     default_code = 'conflict'
 

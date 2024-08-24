@@ -6,14 +6,19 @@ from django.utils.translation import gettext_lazy as _
 
 from django_extensions.db.models import TimeStampedModel
 from django_scim.models import AbstractSCIMGroupMixin, AbstractSCIMUserMixin
+from .adapters import generate_external_id
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, first_name, last_name, password=None, **extra_fields):
+    def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email field must be set")
+        if not username:
+            raise ValueError("The Username field must be set")
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, first_name=first_name, last_name=last_name, **extra_fields)
+       
+        user = self.model(email=email, username=username, **extra_fields)
+        user.scim_username = username 
         user.set_password(password)
         user.save(using=self._db)
         return user 
@@ -23,26 +28,30 @@ class UserManager(BaseUserManager):
         
         user.is_staff = True 
         user.is_admin = True 
+        user.scim_username = username
         user.set_password(password)
         user.save(using=self._db)
         return user 
-
-    # def create_superuser(self, username, password=None, **extra_fields):
-    #     extra_fields.setdefault('is_staff', True)
-    #     extra_fields.setdefault('is_superuser', True)
-
-    #     return self.create_user(username, password, **extra_fields)
     
     def get_by_natural_key(self, username: str):
         return self.get(username=username)
     
     
-# This is overridden user model that uses SCIMUserMixin
 # class User(AbstractSCIMUserMixin, TimeStampedModel, AbstractBaseUser):
 class User(TimeStampedModel, AbstractBaseUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False) 
+    external_id = models.CharField(max_length=100, unique=True, default=generate_external_id)
     username = models.CharField(
         _("Username"),
+        max_length=254,
+        null=True,
+        blank=True,
+        default=None,
+        unique=True,
+        help_text=_("A unique identifier for the user.")
+    )
+    scim_username = models.CharField(
+        _("Scim Username"),
         max_length=254,
         null=True,
         blank=True,
@@ -55,6 +64,7 @@ class User(TimeStampedModel, AbstractBaseUser):
     last_name = models.CharField(_("Last Name"), max_length=100, )   
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    company_name = models.CharField(_("Company Name"), max_length=100,)
     
     USERNAME_FIELD = "username"
     objects = UserManager()
@@ -69,7 +79,7 @@ class User(TimeStampedModel, AbstractBaseUser):
        return self.is_admin
    
     @property
-    def get_scimusername(self):
+    def get_scim_username(self):
         return self.username
    
     @property
@@ -98,7 +108,8 @@ class User(TimeStampedModel, AbstractBaseUser):
 #         return self.scim_display_name
 
 class Group(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    external_id = models.CharField(max_length=100, unique=True, default=generate_external_id)
     display_name = models.CharField(max_length=255, unique=True)
     members = models.ManyToManyField('User', related_name='groups')
 
@@ -108,12 +119,12 @@ class Group(models.Model):
 
 class GroupMember(models.Model):
     user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
+        to="User",
         on_delete=models.CASCADE,
     )
     
     group = models.ForeignKey(
-        to="usermanagement.Group",
+        to="Group",
         on_delete=models.CASCADE,
     )
     
