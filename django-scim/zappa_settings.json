@@ -1,0 +1,13 @@
+{
+    "test": {
+        "django_settings": "scimapi.settings", 
+        "profile_name": "default",
+        "project_name": "django-scim",
+        "runtime": "python3.10",
+        "s3_bucket": "testapigw01",  
+        "timeout_seconds": 300,
+        "memory_size": 512,
+        "slim_handler": true,
+        "keep_warm": false
+    }
+}
