@@ -5,7 +5,6 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from django_extensions.db.models import TimeStampedModel
-from django_scim.models import AbstractSCIMGroupMixin, AbstractSCIMUserMixin
 from .adapters import generate_external_id
 
 
@@ -37,7 +36,6 @@ class UserManager(BaseUserManager):
         return self.get(username=username)
     
     
-# class User(AbstractSCIMUserMixin, TimeStampedModel, AbstractBaseUser):
 class User(TimeStampedModel, AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False) 
     external_id = models.CharField(max_length=100, unique=True, default=generate_external_id)
@@ -89,23 +87,6 @@ class User(TimeStampedModel, AbstractBaseUser):
     def __str__(self):
         return self.username
 
-    
-    
-# class Group(TimeStampedModel, AbstractSCIMGroupMixin):
-#     # company = models.ForeignKey(
-#     #     "usermanagement.Company",
-#     #     on_delete=models.CASCADE,
-#     # )
-    
-#     members = models.ManyToManyField(
-#         settings.AUTH_USER_MODEL,
-#         through="GroupMember",
-#         through_fields=("group", "user")
-#     )
-    
-#     @property
-#     def name(self):
-#         return self.scim_display_name
 
 class Group(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
