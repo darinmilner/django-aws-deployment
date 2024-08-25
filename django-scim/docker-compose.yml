@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    command: /Start 
+    container_name: api
+    volumes: 
+      - .:/app 
+      - static-volume:/app/staticfiles 
+      - media-volume:/app/mediafiles
+    expose: 
+      - "8000"
+    env_file:
+      - ./.env
+    networks: 
+      - scim-api

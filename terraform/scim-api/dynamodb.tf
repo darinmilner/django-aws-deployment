@@ -1,8 +1,8 @@
 
 resource "aws_dynamodb_table" "db-table" {
-  hash_key     = "id"
-  name         = "ScimAPITable"
-  billing_mode = "PROVISIONED"
+  hash_key       = "id"
+  name           = "ScimAPITable"
+  billing_mode   = "PROVISIONED"
   read_capacity  = "30"
   write_capacity = "30"
 

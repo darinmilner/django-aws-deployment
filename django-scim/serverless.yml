@@ -35,7 +35,7 @@ provider:
   role: lambda-role-arn
   profile: admin
   region: us-east-1
-  runtime: python3.11
+  runtime: python3.12
   versionFunctions: false
   stage: ${env:STAGE}
   timeout: 60

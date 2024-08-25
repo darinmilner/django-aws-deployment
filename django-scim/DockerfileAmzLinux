@@ -1,0 +1,39 @@
+FROM amazonlinux:latest
+RUN apk add --no-cache curl tar xz
+
+# install Unix dependencies
+RUN yum install sudo -y
+RUN sudo yum install -y gcc openssl-devel bzip2-devel libffi-devel wget tar sqlite-devel gcc-c++ make
+
+# Install NodeJS
+RUN curl -sL https://rpm.nodesource.com/setup_22.x | sudo -E bash - 
+RUN sudo yum install -y nodejs
+
+# Install Python 3.12.4
+RUN cd /opt
+RUN sudo wget https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tgz
+RUN sudo tar xzf Python-3.12.4.tgz
+RUN cd Python-3.12.4
+RUN sudo ./configure --enable-optimizations
+RUN sudo make altinstall
+RUN sudo rm -f /opt/Python-3.12.4.tgz
+
+# update pip and setup tools
+RUN pip install --upgrade pip setuptools 
+
+# install serverless
+RUN npm install -g serverless 
+
+# install serverless plugins
+RUN npm install -P serverless-dotenv-plugin
+RUN npm install -P serverless-prune-plugin
+RUN npm install -P serverless-python-requirements
+RUN npm install -P serverless-wsgi
+
+
+COPY ./ ./root/src
+RUN pip install -r requirements.txt 
+RUN export DJANGO_SETTINGS_MODULE=scimapi.production
+
+# Run the start script
+ENTRYPOINT [ "/Start" ]
