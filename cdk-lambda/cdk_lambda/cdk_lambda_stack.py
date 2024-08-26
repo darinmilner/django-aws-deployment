@@ -1,6 +1,7 @@
-import os
-from aws_cdk import (
-    core,
+import os 
+import aws_cdk 
+from aws_cdk import Stack, Duration
+from aws_cdk import(
     aws_lambda as dj_lambda,
     aws_apigateway as apigateway,
     aws_s3 as s3,
@@ -11,29 +12,40 @@ from constructs import Construct
 
 load_dotenv()
 
-class DjangoLambdaStack(core.Stack):
+class CdkLambdaStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        # Create an S3 Bucket for Django Static Files
-        static_bucket = s3.Bucket(self, "scim-api-admin-static-files")
+         # Create an S3 Bucket for Django Static Files
+        static_bucket = s3.Bucket(
+            self,
+            id="scim-api-admin-static-files",
+            bucket_name="scim-api-bucket-useast1",
+            encryption=s3.BucketEncryption.S3_MANAGED,   
+        )
         
         # Lambda Function for the Django Scim App
         django_lambda = dj_lambda.Function(
             self, 
             id="scim-api-lambda",
-            runtime=dj_lambda.Runtime.PYTHON_3_11,
-            code=dj_lambda.Code.from_asset("../../django-scim"),
+            function_name=f"scim-api-lambda",
+            runtime=dj_lambda.Runtime.PYTHON_3_12,
+            code=dj_lambda.Code.from_asset("../django-scim"),
             environment={
                 "DJANGO_SETTINGS_MODULE" : "usermanagement.settings",
                 "AWS_STORAGE_BUCKET_NAME" : static_bucket.bucket_name,
-                "SECRET_KEY" : os.getenv("SECRET_KEY"),
-                "DJANGO_ADMIN_URL" : os.getenv("DJANGO_ADMIN_URL")
+                "DJANGO_SUPERUSER_PASSWORD": os.environ.get(
+                    "DJANGO_SUPERUSER_PASSWORD", "Mypassword1!"
+                ),
+                "DJANGO_SUPERUSER_USERNAME": os.environ.get(
+                    "DJANGO_SUPERUSER_USERNAME", "admin"
+                ),
+                "SECRET_KEY" : os.environ.get("SECRET_KEY"),
+                "DJANGO_ADMIN_URL" : os.environ.get("DJANGO_ADMIN_URL"),
             },
-            timeout=core.Duration.minutes(5),
+            timeout=Duration.minutes(5),
             memory_size=512,
-            handler="wsgi.handler",
+            handler="scimapi.wsgi.handler",
         )
         
         # Grants the Lambda Permissions to access S3
@@ -52,8 +64,8 @@ class DjangoLambdaStack(core.Stack):
             self,
             id="deploy-static-files",
             destination_bucket=static_bucket,
-            sources=[s3_deploymwent.Source.asset("../../django-scim/static/")],
+            sources=[s3_deploymwent.Source.asset("../django-scim/staticfiles/")],
         )
         
-        # Output the API Gateway URL
-        core.CfnOutput(self, "ApiUrl", value=api.url)
+        aws_cdk.CfnOutput(self, "Apiurl", value=api.url)
+        

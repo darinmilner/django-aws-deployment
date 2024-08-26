@@ -8,7 +8,7 @@ resource "aws_security_group" "lambda-sg" {
     description = "Open API port 8000"
     from_port   = var.server-port
     to_port     = var.server-port
-    protocol    = var.all-protocols
+    protocol    = var.tcp-protocol
     cidr_blocks = [var.open-cidr]
   }
 

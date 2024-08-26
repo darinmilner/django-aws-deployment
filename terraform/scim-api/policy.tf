@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "lambda-role" {
-  name = "Inventory-Lambda-Role-${local.environment}-${local.short-region}"
+  name = "Scim-Lambda-Role-${local.environment}-${local.short-region}"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -18,7 +18,7 @@ resource "aws_iam_role" "lambda-role" {
 
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.lambda-role.name
-  policy_arn = "arn:aws:iam::aws:policy/servicerole/AWSLambdaBasicExecutionRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy" "api-lambda-policy" {
@@ -37,7 +37,7 @@ resource "aws_iam_role_policy" "api-lambda-policy" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda-loggroup" {
-  name              = "/aws/lambda/inventory-lambda-${local.environment}-${var.region}"
+  name              = "/aws/lambda/scim-lambda-${local.environment}-${var.region}"
   retention_in_days = 14
 }
 
@@ -63,6 +63,6 @@ resource "aws_iam_policy" "lambda-logging-policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda-logs" {
-  role       = aws_iam_role.lambda-role.arn
+  role       = aws_iam_role.lambda-role.name
   policy_arn = aws_iam_policy.lambda-logging-policy.arn
 }

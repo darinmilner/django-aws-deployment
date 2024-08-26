@@ -1,7 +1,0 @@
-#! /bin/bash
-python3 /app/manage.py makemigrations --no-input 
-python3 /app/manage.py migrate --no-input
-python3 /app/manage.py collectstatic --no-input
-
-# python3 /app/manage.py createsuperuser --username admin123  --email 'changeme@email.com' --noinput 
-python3 /app/manage.py runserver 127.0.0.1:8000

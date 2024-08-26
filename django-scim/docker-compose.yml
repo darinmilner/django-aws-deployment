@@ -17,3 +17,11 @@ services:
       - ./.env
     networks: 
       - scim-api
+
+networks:
+  scim-api:
+    driver: bridge 
+
+volumes:
+  static-volume:
+  media-volume:
