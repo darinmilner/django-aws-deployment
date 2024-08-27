@@ -1,21 +1,24 @@
-import os 
+import os
+import subprocess
 import aws_cdk 
-from aws_cdk import Stack, Duration
 from aws_cdk import(
     aws_lambda as dj_lambda,
     aws_apigateway as apigateway,
     aws_s3 as s3,
     aws_s3_deployment as s3_deploymwent,
+    Stack,
+    Duration,
 )
 from dotenv import load_dotenv
 from constructs import Construct
 
+
 load_dotenv()
 
 class CdkLambdaStack(Stack):
-
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+      
          # Create an S3 Bucket for Django Static Files
         static_bucket = s3.Bucket(
             self,
@@ -28,27 +31,29 @@ class CdkLambdaStack(Stack):
         django_lambda = dj_lambda.Function(
             self, 
             id="scim-api-lambda",
-            function_name=f"scim-api-lambda",
+            function_name=f"scim-api-lambda-{os.getenv('SHORT_REGION')}",
             runtime=dj_lambda.Runtime.PYTHON_3_12,
-            code=dj_lambda.Code.from_asset("../django-scim"),
+            code=dj_lambda.Code.from_asset("../django-hello/app"),
             environment={
-                "DJANGO_SETTINGS_MODULE" : "usermanagement.settings",
+                "DJANGO_SETTINGS_MODULE" : "app.settings",
                 "AWS_STORAGE_BUCKET_NAME" : static_bucket.bucket_name,
-                "DJANGO_SUPERUSER_PASSWORD": os.environ.get(
-                    "DJANGO_SUPERUSER_PASSWORD", "Mypassword1!"
-                ),
-                "DJANGO_SUPERUSER_USERNAME": os.environ.get(
-                    "DJANGO_SUPERUSER_USERNAME", "admin"
-                ),
-                "SECRET_KEY" : os.environ.get("SECRET_KEY"),
-                "DJANGO_ADMIN_URL" : os.environ.get("DJANGO_ADMIN_URL"),
+                # "DJANGO_SUPERUSER_PASSWORD": os.environ.get(
+                #     "DJANGO_SUPERUSER_PASSWORD", "Mypassword1!"
+                # ),
+                # "DJANGO_SUPERUSER_USERNAME": os.environ.get(
+                #     "DJANGO_SUPERUSER_USERNAME", "admin"
+                # ),
+                # "SECRET_KEY" : os.environ.get("SECRET_KEY"),
+                # "DJANGO_ADMIN_URL" : os.environ.get("DJANGO_ADMIN_URL"),
             },
             timeout=Duration.minutes(5),
-            memory_size=512,
-            handler="scimapi.wsgi.handler",
+            memory_size=1024,
+            # handler="scimapi.wsgi.handler",
+            handler="lambda_function.lambda_handler",
+            layers=[self.create_dependencies_layer(self.stack_name, "test_lambda")]
         )
-        
-        # Grants the Lambda Permissions to access S3
+           
+       # Grants the Lambda Permissions to access S3
         static_bucket.grant_read_write(django_lambda)
         
         #API Gateway creates a REST API for the Lambda
@@ -59,13 +64,36 @@ class CdkLambdaStack(Stack):
             proxy=True,
         )
         
+        # hello_route = api.root.add_resource("hello")
+        # hello_route.add_method("GET")
+        
+        # admin_route = api.root.add_resource(os.environ.get("DJANGO_ADMIN_URL"))
+        # admin_route.add_method("GET")
+        
         # Deploy Django static files to S3
         s3_deploymwent.BucketDeployment(
             self,
             id="deploy-static-files",
             destination_bucket=static_bucket,
-            sources=[s3_deploymwent.Source.asset("../django-scim/staticfiles/")],
+            sources=[s3_deploymwent.Source.asset("../django-hello/app/staticfiles/")],
         )
         
         aws_cdk.CfnOutput(self, "Apiurl", value=api.url)
+        
+    def create_dependencies_layer(self, project_name, function_name: str) -> dj_lambda.LayerVersion:
+        requirements_file = "../django-hello/requirements.txt"  # requirements.txt
+        output_dir = "./build/app"  # temporary directory to store dependencies
+        
+        subprocess.check_call(f"pip install -r {requirements_file} -t {output_dir}/python".split())
+        
+        layer_id = f"{project_name}-{function_name}-dependencies"
+        layer_code = dj_lambda.Code.from_asset(output_dir)
+        
+        layer = dj_lambda.LayerVersion(
+                self,
+                layer_id,
+                code=layer_code,
+        )
+        
+        return layer 
         

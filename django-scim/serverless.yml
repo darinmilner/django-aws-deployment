@@ -64,4 +64,5 @@ package:
     - node_modules/**
     - static/**
     - DockerfileAmzLinux
+    - Dockerfile
     - example.env
