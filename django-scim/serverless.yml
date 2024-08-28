@@ -41,10 +41,10 @@ provider:
   timeout: 60
   vpc:
     securityGroupIds:
-      - sg-03cc1af3ddbd4b328
+      - sg-fdg4534
     subnetIds:
-      - subnet-018b11c21a6479bce
-      - subnet-0e86281c5062a8377
+      - subnet-fdsfdsf
+      - subnet-45ertert
   deploymentBucket:
     name: ${env:DEPLOYMENT_BUCKET}
   apiGateway:

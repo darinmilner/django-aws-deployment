@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "upload-bucket" {
-  bucket = "scim-api-bucket-${local.short-region}"
+  bucket = "scim-api-bucket-${var.short-region}"
 }
 
 resource "aws_s3_bucket_acl" "upload-bucket-acl" {

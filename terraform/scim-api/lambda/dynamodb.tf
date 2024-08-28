@@ -12,6 +12,6 @@ resource "aws_dynamodb_table" "db-table" {
   }
 
   tags = {
-    Name = "scim-api-table-${local.environment}-${local.short-region}"
+    Name = "scim-api-table-${var.environment}-${var.short-region}"
   }
 }

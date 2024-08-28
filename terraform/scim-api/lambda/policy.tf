@@ -1,6 +1,5 @@
-
 resource "aws_iam_role" "lambda-role" {
-  name = "Scim-Lambda-Role-${local.environment}-${local.short-region}"
+  name = "Test-Lambda-Role-${var.environment}-${var.short-region}"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -16,9 +15,14 @@ resource "aws_iam_role" "lambda-role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_policy" {
+resource "aws_iam_role_policy_attachment" "lambda-policy" {
   role       = aws_iam_role.lambda-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda-vpc-policy" {
+  role       = aws_iam_role.lambda-role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 resource "aws_iam_role_policy" "api-lambda-policy" {
@@ -34,11 +38,6 @@ resource "aws_iam_role_policy" "api-lambda-policy" {
       }
     ]
   })
-}
-
-resource "aws_cloudwatch_log_group" "lambda-loggroup" {
-  name              = "/aws/lambda/scim-lambda-${local.environment}-${var.region}"
-  retention_in_days = 14
 }
 
 data "aws_iam_policy_document" "lambda-logging" {
