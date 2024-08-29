@@ -33,4 +33,5 @@ module "alb" {
   subnet2      = module.network.subnet2-id
   lambda-arn   = module.lambda.lambda-arn
   lambda-name  = module.lambda.lambda-name
+  vpc-id       = module.network.vpc-id
 }

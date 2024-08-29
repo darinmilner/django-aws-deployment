@@ -6,13 +6,15 @@ resource "aws_lb_target_group" "lb-tg" {
 resource "aws_lb_target_group_attachment" "lb-attach" {
   target_group_arn = aws_lb_target_group.lb-tg.arn
   target_id        = var.lambda-arn
+  depends_on = [ aws_lambda_permission.invoke-lambda ]
 }
 
 resource "aws_lb" "app-lb" {
   name               = "lambda-alb"
-  internal           = false 
+  internal           = false
   load_balancer_type = "application"
-
+  security_groups    = [aws_security_group.alb-sg.id]
+  
   subnets = [
     var.subnet1,
     var.subnet2
@@ -34,6 +36,8 @@ resource "aws_lb_listener" "lb-listener" {
       status_code  = 200
     }
   }
+
+  
 }
 
 # # redireect to HTTPS if using Route53 domain
@@ -56,7 +60,6 @@ resource "aws_lb_listener" "lb-listener" {
 # Maps incoming requests to the server (Lambda)
 resource "aws_lb_listener_rule" "http-listener" {
   listener_arn = aws_lb_listener.lb-listener.arn
-  priority     = 100
 
   action {
     type             = "forward"
@@ -65,7 +68,13 @@ resource "aws_lb_listener_rule" "http-listener" {
 
   condition {
     path_pattern {
-      values = ["/static/*"]
+      values = [var.lambda-name]
+    }
+  }
+
+  condition {
+    http_request_method {
+      values = ["GET","OPTIONS", "POST"]
     }
   }
 }

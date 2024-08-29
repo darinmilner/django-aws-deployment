@@ -25,3 +25,7 @@ variable "lambda-arn" {
 variable "lambda-name" {
   description = "Name of the lambda"
 }
+
+variable "vpc-id" {
+  description = "VPC ID"
+}
