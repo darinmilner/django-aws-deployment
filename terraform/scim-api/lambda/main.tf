@@ -11,7 +11,8 @@ resource "aws_lambda_function" "test-lambda" {
   handler          = "test_lambda.lambda_handler"
   filename         = "lambda.zip"
   source_code_hash = data.archive_file.lambda.output_base64sha256
-
+  layers = [ aws_lambda_layer_version.layer_version.arn ]
+  timeout = 60
   runtime = "python3.12"
 
   environment {

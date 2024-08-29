@@ -42,3 +42,5 @@ keypair/
 .DS_Store
 
 venv/
+
+build/

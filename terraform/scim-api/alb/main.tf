@@ -14,6 +14,7 @@ resource "aws_lb" "app-lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb-sg.id]
+  enable_deletion_protection = false 
   
   subnets = [
     var.subnet1,
@@ -36,8 +37,6 @@ resource "aws_lb_listener" "lb-listener" {
       status_code  = 200
     }
   }
-
-  
 }
 
 # # redireect to HTTPS if using Route53 domain

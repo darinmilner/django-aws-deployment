@@ -8,4 +8,7 @@ def create_dependencies_layer(project_name, function_name):
         
     layer_id = f"{project_name}-{function_name}-dependencies"
     
-    print(layer_id)
+    print(f"{layer_id} for lambda {function_name} has been created!")
+    
+
+create_dependencies_layer("test-lambda-layer", "test-lambda-test-useast1")
