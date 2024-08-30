@@ -5,17 +5,17 @@ resource "aws_lb_target_group" "lb-tg" {
 
 resource "aws_lb_target_group_attachment" "lb-attach" {
   target_group_arn = aws_lb_target_group.lb-tg.arn
-  target_id        = var.lambda-arn
-  depends_on = [ aws_lambda_permission.invoke-lambda ]
+  target_id        = var.lambda-alias
+  depends_on       = [aws_lambda_permission.invoke-lambda]
 }
 
 resource "aws_lb" "app-lb" {
-  name               = "lambda-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb-sg.id]
-  enable_deletion_protection = false 
-  
+  name                       = "lambda-alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.alb-sg.id]
+  enable_deletion_protection = false
+
   subnets = [
     var.subnet1,
     var.subnet2
@@ -26,6 +26,7 @@ resource "aws_lb_listener" "lb-listener" {
   load_balancer_arn = aws_lb.app-lb.arn
   port              = "80"
   protocol          = "HTTP"
+  #   ssl_policy = "ELBSecurityPolicy-2016-08"
 
   default_action {
     type             = "forward"
@@ -73,7 +74,7 @@ resource "aws_lb_listener_rule" "http-listener" {
 
   condition {
     http_request_method {
-      values = ["GET","OPTIONS", "POST"]
+      values = ["GET", "OPTIONS", "POST"]
     }
   }
 }

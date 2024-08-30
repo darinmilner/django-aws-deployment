@@ -26,6 +26,14 @@ variable "lambda-name" {
   description = "Name of the lambda"
 }
 
+variable "lambda-alias" {
+  description = "Alias ARN of the lambda"
+}
+
+variable "lambda-alias-name" {
+  description = "Alias name of the lambda"
+}
+
 variable "vpc-id" {
   description = "VPC ID"
 }

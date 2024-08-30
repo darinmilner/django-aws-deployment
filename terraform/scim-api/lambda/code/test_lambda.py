@@ -30,11 +30,33 @@ def lambda_handler(event, context):
         import rest_framework
         print("Django rest framework has been imported")
     except Exception as e:
-        print(f"could not import django {e}")
+        print(f"could not import django restframework {e}")
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'text/plain'},
             'body': "Django Rest Framework was not imported",
+    }
+        
+    try:
+        import dotenv
+        print("Django dotenv has been imported")
+    except Exception as e:
+        print(f"could not import django dotenv {e}")
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'text/plain'},
+            'body': "Django Rest Framework was not imported",
+    }
+        
+    try:
+        import django_scim
+        print("Django scim has been imported")
+    except Exception as e:
+        print(f"could not import django scim {e}")
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'text/plain'},
+            'body': "Django scim was not imported",
     }
 
     print(os.listdir("/opt"))
@@ -42,5 +64,5 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': {'Content-Type': 'text/plain'},
-        'body': 'Hello, ALB! You have hit {}\n'.format(event['path']),
+        'body': 'Hello, ALB is working. Layers are working',
     }

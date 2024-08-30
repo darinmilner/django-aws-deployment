@@ -4,6 +4,13 @@ data "archive_file" "lambda" {
   output_path = "lambda.zip"
 }
 
+resource "aws_lambda_alias" "lambda-alias" {
+  name             = "test-alias"
+  description      = "Alias for API lambda"
+  function_name    = aws_lambda_function.test-lambda.arn
+  function_version = aws_lambda_function.test-lambda.version
+}
+
 # Zip lambda folder first
 resource "aws_lambda_function" "test-lambda" {
   function_name    = "test-lambda-${var.environment}-${var.short-region}"
@@ -11,9 +18,9 @@ resource "aws_lambda_function" "test-lambda" {
   handler          = "test_lambda.lambda_handler"
   filename         = "lambda.zip"
   source_code_hash = data.archive_file.lambda.output_base64sha256
-  layers = [ aws_lambda_layer_version.layer_version.arn ]
-  timeout = 60
-  runtime = "python3.12"
+  layers           = [aws_lambda_layer_version.layer_version.arn]
+  timeout          = 60
+  runtime          = "python3.12"
 
   environment {
     variables = {

@@ -44,3 +44,5 @@ keypair/
 venv/
 
 build/
+
+python.zip
