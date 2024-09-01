@@ -1,9 +1,9 @@
 from .settings import *  # noqa
+import os 
 
 DEBUG = False
 
 # TODO: Add Dynamo DB
-
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = os.getenv("DJANGO_SECURE_SSL_REDIRECT", default=False)
 SESSION_COOKIE_SECURE = True

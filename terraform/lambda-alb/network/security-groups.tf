@@ -11,14 +11,7 @@ resource "aws_security_group" "lambda-sg" {
   #   cidr_blocks = [var.open-cidr]
   # }
 
-  # ingress {
-  #   description = "SSH from VPC"
-  #   from_port   = var.ssh-port
-  #   to_port     = var.ssh-port
-  #   protocol    = var.tcp-protocol
-  #   cidr_blocks = [aws_vpc.main.cidr_block]
-  # }
-
+ 
   ingress {
     description = "ALL Open"
     from_port   = var.all-ports

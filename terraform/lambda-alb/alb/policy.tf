@@ -1,5 +1,5 @@
 resource "aws_iam_role" "alb-role" {
-  name = "Test-Lambda-ALB-Role-${var.environment}-${var.short-region}"
+  name = "test-lambda-alb-role-${var.environment}-${var.short-region}"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy" "alb-lambda-policy" {
       {
         "Effect" : "Allow",
         "Action" : ["lambda:*"],
-        "Resource" : "${var.lambda-arn}"
+        "Resource" : var.lambda-arn
       }
     ]
   })

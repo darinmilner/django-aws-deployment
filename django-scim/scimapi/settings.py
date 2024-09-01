@@ -13,7 +13,7 @@ SECRET_KEY =  os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])]
+ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])]
 
 
 INSTALLED_APPS = [
@@ -49,7 +49,7 @@ TEMPLATES = [
             str(BASE_DIR / "templates"),  
             str(BASE_DIR / "staticfiles"),     
         ],
-        # 'APP_DIRS': True,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

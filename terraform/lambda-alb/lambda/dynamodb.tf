@@ -1,4 +1,3 @@
-
 resource "aws_dynamodb_table" "db-table" {
   hash_key       = "id"
   name           = "ScimAPITable"

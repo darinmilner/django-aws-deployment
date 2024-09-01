@@ -1,4 +1,4 @@
-from uuid import UUID
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -104,3 +104,9 @@ class SCIMGroupView(APIView):
         except Group.DoesNotExist:
             raise SCIMNotFound(detail=f"Resource {pk} not found")
 
+
+def query_user_by_company_name(request):
+    company_name = request.Get.get("company_name")
+    users = User.objects.get(Q(company_name=company_name))
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
