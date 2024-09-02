@@ -9,7 +9,6 @@ from .exceptions import SCIMConflict, SCIMNotFound, SCIMBadRequest
 from rest_framework.exceptions import APIException
 
 class SCIMUserView(APIView):
-
     def get(self, request, pk=None):
         print(pk)
         try:
