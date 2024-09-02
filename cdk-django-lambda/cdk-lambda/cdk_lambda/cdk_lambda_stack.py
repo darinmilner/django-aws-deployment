@@ -22,16 +22,16 @@ class CdkLambdaStack(Stack):
          # Create an S3 Bucket for Django Static Files
         static_bucket = s3.Bucket(
             self,
-            id="scim-api-admin-static-files",
-            bucket_name="scim-api-bucket-useast1",
+            id="django-hello-admin-static-files",
+            bucket_name="django-hello-bucket-useast1",
             encryption=s3.BucketEncryption.S3_MANAGED,   
         )
         
         # Lambda Function for the Django Scim App
         django_lambda = dj_lambda.Function(
             self, 
-            id="scim-api-lambda",
-            function_name=f"scim-api-lambda-{os.getenv('SHORT_REGION')}",
+            id="django-hello-lambda",
+            function_name=f"django-hello-lambda-{os.getenv('SHORT_REGION')}",
             runtime=dj_lambda.Runtime.PYTHON_3_12,
             code=dj_lambda.Code.from_asset("../django-hello/app"),
             environment={
@@ -59,7 +59,7 @@ class CdkLambdaStack(Stack):
         #API Gateway creates a REST API for the Lambda
         api = apigateway.LambdaRestApi(
             self,
-            id="scim-api-gateway",
+            id="django-hello-gateway",
             handler=django_lambda,
             proxy=True,
         )
@@ -81,7 +81,7 @@ class CdkLambdaStack(Stack):
         aws_cdk.CfnOutput(self, "Apiurl", value=api.url)
         
     def create_dependencies_layer(self, project_name, function_name: str) -> dj_lambda.LayerVersion:
-        requirements_file = "../django-hello/requirements.txt"  # requirements.txt
+        requirements_file = "../django-hello/app/requirements.txt"  # requirements.txt
         output_dir = "./build/app"  # temporary directory to store dependencies
         
         subprocess.check_call(f"pip install -r {requirements_file} -t {output_dir}/python".split())

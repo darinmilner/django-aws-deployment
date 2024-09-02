@@ -39,6 +39,9 @@ $ pip install -r requirements.txt
 
 At this point you can now synthesize the CloudFormation template for this code.
 
+To deploy using staic files
+python manage.py collectstatic by cd into django-hello/app
+
 ```
 $ cdk synth
 ```

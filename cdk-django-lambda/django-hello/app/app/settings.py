@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["your-api-gateway-url", "localhost"] # API Gateway URL 
+ALLOWED_HOSTS = ["<your endpoint>.execute-api.us-east-1.amazonaws.com", "localhost"] # API Gateway URL 
 
 
 # Application definition
