@@ -6,5 +6,5 @@ urlpatterns = [
     path('scim/v2/Users/<uuid:pk>/', SCIMUserView.as_view(), name='scim-user-detail'),
     path('scim/v2/Groups/', SCIMGroupView.as_view(), name='scim-groups-list'),
     path('scim/v2/Groups/<uuid:pk>/', SCIMGroupView.as_view(), name='scim-group-detail'),
-    path("scim/v2/users/search/", query_user_by_company_name, name="query-user-by-company"), # TODO: make dyunamic query
+    path("scim/v2/users/search-by-company-name", query_user_by_company_name, name="query-user-by-company"), # TODO: make dyunamic query
 ]

@@ -106,7 +106,7 @@ class SCIMGroupView(APIView):
 
 
 def query_user_by_company_name(request):
-    company_name = request.Get.get("company_name")
+    company_name = request.GET.get("companyname")
     users = User.objects.get(Q(company_name=company_name))
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
