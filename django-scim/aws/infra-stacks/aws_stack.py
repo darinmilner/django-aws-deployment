@@ -12,7 +12,7 @@ class AwsStack(Stack):
         
         source = pipelines.CodePipelineSource.connection(
             repo_string="repo-goes-here",    #TODO: add repo url
-            branch="main",
+            branch="master",
             connection_arn=connection_arn,
         )
         
@@ -29,4 +29,7 @@ class AwsStack(Stack):
                 commands=base_commands + ["cdk synth"]                          
             )                              
         )
+        
+        infra_stage = InfrastructureStage(self, "infra-stage")
+        infra_deploy = pipeline.add_stage(infra_stage)
         

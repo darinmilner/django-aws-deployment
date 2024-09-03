@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["<your endpoint>.execute-api.us-east-1.amazonaws.com", "localhost"] # API Gateway URL 
+ALLOWED_HOSTS = ["<your-endpoint>.execute-api.us-east-1.amazonaws.com", "localhost"] # API Gateway URL 
 
 
 # Application definition
@@ -129,3 +129,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATICFILES_STORAGE = "django-hello.utils.StaticRootS3Boto3Storage"
+STATIC_URL = f"https://{AWS_S3_DOMAIN}/static/"
+DEFAULT_FILE_STORAGE = "django-hello.utils.MediaRootS3Boto3Storage"
+MEDIA_URL = f"https://{AWS_S3_DOMAIN}/media/"
+MEDIAFILES_LOCATION = "/media"
+
+STATICFILES_LOCATION = "/static"
