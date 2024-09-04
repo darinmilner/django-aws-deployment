@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
 from django_extensions.db.models import TimeStampedModel
 from .adapters import generate_external_id
 
@@ -14,8 +13,7 @@ class UserManager(BaseUserManager):
             raise ValueError("The Email field must be set")
         if not username:
             raise ValueError("The Username field must be set")
-        email = self.normalize_email(email)
-       
+        email = self.normalize_email(email)     
         user = self.model(email=email, username=username, **extra_fields)
         user.scim_username = username 
         user.set_password(password)
@@ -23,8 +21,7 @@ class UserManager(BaseUserManager):
         return user 
     
     def create_superuser(self, username, password):
-        user = self.model(username=username, password=password)
-        
+        user = self.model(username=username, password=password)      
         user.is_staff = True 
         user.is_admin = True 
         user.scim_username = username

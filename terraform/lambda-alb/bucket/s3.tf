@@ -7,13 +7,16 @@ resource "aws_s3_bucket_acl" "upload-bucket-acl" {
   acl    = "public-read"
 }
 
+resource "aws_s3_bucket_public_access_block" "name" {
+   bucket = aws_s3_bucket.upload-bucket.id 
+
+   block_public_policy = false 
+}
 resource "aws_s3_bucket_server_side_encryption_configuration" "upload-bucket-encryption" {
   bucket = aws_s3_bucket.upload-bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
-      #   kms_master_key_id = aws_kms_key.bucket-kms-key.arn
-      #   sse_algorithm     = "aws:kms"
       sse_algorithm = "AES256"
     }
   }
@@ -26,23 +29,12 @@ resource "aws_s3_bucket_versioning" "upload-bucket-versioning" {
   }
 }
 
-# May Not Be Needed
-# resource "aws_s3_bucket_cors_configuration" "upload-bucket-cors" {
-#   bucket = aws_s3_bucket.upload-bucket.id
-
-#   cors_rule {
-#     allowed_headers = ["*"]
-#     allowed_methods = ["PUT", "POST"]
-#     allowed_origins = ["https://s3-website-test.hashicorp.com"] # TODO: change to website url
-#     expose_headers  = ["ETag"]
-#     max_age_seconds = 3000
-#   }
-
-#   cors_rule {
-#     allowed_methods = ["GET"]
-#     allowed_origins = ["*"]
-#   }
-# }
+resource "aws_s3_bucket_ownership_controls" "object-controls" {
+  bucket = aws_s3_bucket.upload-bucket.id
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
 
 resource "aws_s3_bucket_policy" "upload-bucket-policy" {
   bucket = aws_s3_bucket.upload-bucket.id

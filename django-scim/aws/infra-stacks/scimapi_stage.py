@@ -9,8 +9,7 @@ from aws_cdk import (
 from constructs import Construct
 
 
-class SimApiStack(Stack):
-
+class ScimApiStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, vpc: ec2.Vpc, cluster: ecs.Cluster, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
