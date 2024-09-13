@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
+from django.utils import timezone 
 from .adapters import generate_external_id
 
 
@@ -21,9 +22,11 @@ class UserManager(BaseUserManager):
         return user 
     
     def create_superuser(self, username, password):
-        user = self.model(username=username, password=password)      
-        user.is_staff = True 
-        user.is_admin = True 
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        
+        user = self.create_user(username=username, password=password)      
         user.scim_username = username
         user.set_password(password)
         user.save(using=self._db)
@@ -34,10 +37,11 @@ class UserManager(BaseUserManager):
     
     
 class User(TimeStampedModel, AbstractBaseUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False) 
+    pkid = models.BigAutoField(primary_key=True, editable=False)
+    id = models.UUIDField(default=uuid.uuid4(), editable=False) 
     external_id = models.CharField(max_length=100, unique=True, default=generate_external_id)
     username = models.CharField(
-        _("Username"),
+        verbose_name=_("Username"),
         max_length=254,
         null=True,
         blank=True,
@@ -46,23 +50,28 @@ class User(TimeStampedModel, AbstractBaseUser):
         help_text=_("A unique identifier for the user.")
     )
     scim_username = models.CharField(
-        _("Scim Username"),
+        verbose_name= _("Scim Username"),
         max_length=254,
         null=True,
         blank=True,
         default=None,
         unique=True,
-        help_text=_("A unique identifier for the user.")
+        help_text=_("User's scim username.")
     )
-    email = models.EmailField(_("Email"))  
-    first_name = models.CharField(_("First Name"), max_length=100,)  
-    last_name = models.CharField(_("Last Name"), max_length=100, )   
+    email = models.EmailField(verbose_name=_("Primary Email"))  
+    first_name = models.CharField(verbose_name=_("First Name"), max_length=100,)  
+    last_name = models.CharField(verbose_name=_("Last Name"), max_length=100, )   
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    company_name = models.CharField(_("Company Name"), max_length=100,)
+    is_active = models.BooleanField(default=True)
+    company_name = models.CharField(verbose_name=_("Company Name"), max_length=100,)
     
     USERNAME_FIELD = "username"
     objects = UserManager()
+    
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
     
     def get_full_name(self):
         return self.first_name + " " + self.last_name
